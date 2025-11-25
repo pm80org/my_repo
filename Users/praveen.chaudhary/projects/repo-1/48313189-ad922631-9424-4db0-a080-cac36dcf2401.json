@@ -789,6 +789,8 @@
 									"    pm.environment.set(\"videoCallId\", resp.Id);",
 									"",
 									"",
+									"    // hello",
+									"",
 									"});"
 								],
 								"type": "text/javascript",
