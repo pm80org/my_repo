@@ -1,0 +1,1793 @@
+{
+	"info": {
+		"_postman_id": "48313189-ad922631-9424-4db0-a080-cac36dcf2401",
+		"name": "ECI Video Call Upload [v3.1]",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "SOAP Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3783a898-0a04-48b2-82b9-b8e5c21f1f85",
+								"exec": [
+									"pm.test(\"Successful login\", () => {",
+									"    try {",
+									"        var result = xml2Json(pm.response.text())[\"soapenv:Envelope\"][\"soapenv:Body\"].loginResponse.result;",
+									"        var url = result.serverUrl.split(\"/\");",
+									"        pm.environment.set(\"accessToken\", result.sessionId);",
+									"        pm.environment.set(\"endpoint\", url[0] + \"//\" + url[2]);",
+									"        pm.environment.set(\"userId\", result.userId);",
+									"        pm.environment.set(\"orgId\", result.userInfo.organizationId);",
+									"    } catch {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed\");",
+									"    }",
+									"",
+									"    if (!result.sessionId) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "dc07915c-0435-4212-93da-d8bf9b8f1462",
+								"exec": [
+									"console.log(\"hello\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "48313189-8ba99697-1ed5-4551-8739-dd9cfc8b5c46",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml",
+								"type": "text"
+							},
+							{
+								"key": "SOAPAction",
+								"value": "login",
+								"type": "text"
+							},
+							{
+								"key": "charset",
+								"value": "UTF-8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<env:Envelope xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n    xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <env:Body>\n        <n1:login xmlns:n1=\"urn:partner.soap.sforce.com\">\n            <n1:username>{{username}}</n1:username>\n            <n1:password>{{password}}</n1:password>\n        </n1:login>\n    </env:Body>\n</env:Envelope>"
+						},
+						"url": {
+							"raw": "{{loginEndpoint}}/services/Soap/u/60.0",
+							"host": [
+								"{{loginEndpoint}}"
+							],
+							"path": [
+								"services",
+								"Soap",
+								"u",
+								"60.0"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48313189-e9b0df68-32e3-437a-8bab-c887dbd7af63",
+			"description": "Logs into the org to get a session token. Required to run all of the subsequent calls.\n\n**Notes:**\n\n- The token will expire and this call may need to be re-run if you leave the process for awhile\n- This call will not interfere with any call data in the environment"
+		},
+		{
+			"name": "Environment Setup",
+			"item": [
+				{
+					"name": "Get Org Creation Date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f20e6bd4-718e-419b-8483-bae43e1c78fc",
+								"exec": [
+									"let result = pm.response.json()",
+									"console.log('pcm')",
+									"let createdDate = null;",
+									"let noViewSetup = null;",
+									"",
+									"try {",
+									"    createdDate = result.records[0].CreatedDate;",
+									"} catch (e) {",
+									"    if (result[0] && result[0].message.includes(\"sObject type \\'Organization\\' is not supported\")) {",
+									"        noViewSetup = true;",
+									"    } else {",
+									"        console.log(e)",
+									"    }",
+									"}",
+									"",
+									"if (!createdDate && !noViewSetup) { // Error case",
+									"    pm.execution.setNextRequest(null);",
+									"",
+									"    let err = null;",
+									"    try {",
+									"        err = result[0];",
+									"    } catch (e) {}",
+									"",
+									"    if (err != null) {",
+									"        if (err.errorCode == \"INVALID_SESSION_ID\") {",
+									"            pm.expect.fail(\"Please run login again\");",
+									"        } else {",
+									"            pm.expect.fail(err.message);",
+									"        }",
+									"    }",
+									"    pm.test(\"Successfully found date\", () => pm.expect.fail(\"No CreatedDate found\"));",
+									"}",
+									"",
+									"",
+									"let sdtField = pm.iterationData.get(\"startDateTime\");",
+									"if (sdtField == \"AUTOMATIC\") { // Generate date from org creation date",
+									"    var startDate = noViewSetup ? new Date() : new Date(createdDate)",
+									"    startDate.setDate(startDate.getDate()-1);",
+									"    var endDate = new Date(startDate);",
+									"",
+									"    startDate.setSeconds(startDate.getSeconds()-parseInt(pm.environment.get(\"recordingDuration\")));",
+									"",
+									"    pm.environment.set(\"cStartDateTime\", startDate.toISOString());",
+									"    pm.environment.set(\"cEndDateTime\", endDate.toISOString());",
+									"} else if (sdtField == \"CURRENT\") { // Generate date now",
+									"    var startDate = new Date();",
+									"    startDate.setHours(startDate.getHours()-1);",
+									"    var endDate = new Date(startDate);",
+									"",
+									"    startDate.setSeconds(startDate.getSeconds()-parseInt(pm.environment.get(\"recordingDuration\")));",
+									"",
+									"    pm.environment.set(\"cStartDateTime\", startDate.toISOString());",
+									"    pm.environment.set(\"cEndDateTime\", endDate.toISOString());",
+									"} else if (sdtField == \"RANDOM\") { // Generate date randomly in past 30 days",
+									"    const now = Date.now();",
+									"    const threeMonthsAgo = now - 30 * 24 * 60 * 60 * 1000; // 90 days in milliseconds",
+									"    const randomTimestamp = Math.random() * (now - threeMonthsAgo) + threeMonthsAgo;",
+									"    var startDate = new Date(randomTimestamp);",
+									"    var endDate = new Date(startDate);",
+									"",
+									"    startDate.setSeconds(startDate.getSeconds()-parseInt(pm.environment.get(\"recordingDuration\")));",
+									"",
+									"    pm.environment.set(\"cStartDateTime\", startDate.toISOString());",
+									"    pm.environment.set(\"cEndDateTime\", endDate.toISOString());",
+									"} else { // Use existing date",
+									"    var startDate = new Date(pm.iterationData.get(\"startDateTime\"));",
+									"    if (startDate.toString() == \"Invalid Date\") {",
+									"        pm.expect.fail(\"Invalid startDateTime field in JSON file provided\");",
+									"    }",
+									"    var endDate = new Date(startDate);",
+									"",
+									"    startDate.setSeconds(startDate.getSeconds()-parseInt(pm.environment.get(\"recordingDuration\")));",
+									"",
+									"    pm.environment.set(\"cStartDateTime\", startDate.toISOString());",
+									"    pm.environment.set(\"cEndDateTime\", endDate.toISOString());",
+									"}",
+									"var startDateTime = new Date(pm.environment.get(\"cStartDateTime\"));",
+									"pm.test(\"Using call start date: \" + startDate + \" based on JSON: \" + sdtField, true);",
+									"pm.environment.set(\"baseTranscriptStartTime\", startDateTime.getTime());",
+									"",
+									"var rawTranscript = pm.environment.get(\"transcript\");",
+									"rawTranscript = rawTranscript.replaceAll(\"\\\\\\\"\",\"\\\"\");",
+									"var transcript = JSON.parse(rawTranscript);",
+									"var transcriptStartTime = transcript[0].EntryStartTime",
+									"for (var i = 0; i < transcript.length; i++) {",
+									"    transcript[i].EntryStartTime = startDateTime.getTime() + (transcript[i].EntryStartTime - transcriptStartTime);",
+									"    transcript[i].EntryEndTime = startDateTime.getTime() + (transcript[i].EntryEndTime - transcriptStartTime);",
+									"}",
+									"rawTranscript = JSON.stringify(transcript);",
+									"rawTranscript = rawTranscript.replaceAll(\"\\\"\",\"\\\\\\\"\");",
+									"pm.environment.set(\"transcript\", rawTranscript);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2121a100-2ced-4a64-882b-65bdf36a263d",
+								"exec": [
+									"/*let rawData = pm.iterationData.get(\"calls\");",
+									"if (!rawData) {",
+									"    throw Error(\"No calls provided\");",
+									"}",
+									"if ((pm.environment.get(\"callCount\") === undefined || pm.environment.get(\"numCallsInData\") === undefined)) {",
+									"    pm.environment.set(\"callCount\", 1);",
+									"    pm.environment.set(\"numCallsInData\", pm.iterationData.get(\"calls\")?.length);",
+									"}",
+									"pm.test(\"Run \" + pm.environment.get(\"callCount\") + \" of \" + pm.environment.get(\"numCallsInData\"));",
+									"",
+									"let currIndex = pm.environment.get(\"callCount\")-1;",
+									"let rawCallData = rawData[currIndex];*/",
+									"console.log('here');",
+									"",
+									"if (pm.iterationData.get(\"name\") != null) {",
+									"    // Copy over JSON data",
+									"    pm.environment.set(\"cloud\", pm.iterationData.get(\"cloud\"));",
+									"    pm.environment.set(\"name\", pm.iterationData.get(\"name\"));",
+									"    pm.environment.set(\"recordingDuration\", pm.iterationData.get(\"recordingDuration\"));",
+									"    pm.environment.set(\"recordingFormat\", pm.iterationData.get(\"recordingFormat\"));",
+									"    // pm.environment.set(\"relatedRecordName\", encodeURIComponent(pm.iterationData.get(\"relatedRecordName\")));",
+									"    pm.environment.set(\"participants\", JSON.stringify(pm.iterationData.get(\"participants\")));",
+									"    pm.environment.set(\"numParticipants\", pm.iterationData.get(\"participants\").length+1);",
+									"    pm.environment.set(\"participantsInternalJson\", JSON.stringify([",
+									"        { id: pm.environment.get(\"userId\") }",
+									"    ]));  // First participant is always the host",
+									"    pm.environment.set(\"participantsExternalJson\", JSON.stringify([]));",
+									"    pm.environment.set(\"language\", pm.iterationData.get(\"language\") || \"en\");",
+									"",
+									"    // NOTE: The following three will also be processed in Create Video Participants",
+									"    // Moments",
+									"    var moments = pm.iterationData.get(\"dataMoments\")",
+									"                            .replaceAll(\"\\\"\",\"\\\\\\\"\");",
+									"    pm.environment.set(\"moments\", moments);",
+									"",
+									"    // Call Structure",
+									"    // NOTE: still not fully processed, even after Create Video Participants. See Create Video Recording",
+									"    var structure = pm.iterationData.get(\"dataDiarization\")",
+									"                            .replaceAll(\"{{orgId}}\", pm.environment.get(\"orgId\"))",
+									"                            .replaceAll(\"{{userId}}\", pm.environment.get(\"userId\"))",
+									"                            .replaceAll(\"\\\"\",\"\\\\\\\"\");",
+									"    pm.environment.set(\"diarization\", structure);",
+									"",
+									"    // Transcript",
+									"    var transcript = pm.iterationData.get(\"dataTranscript\")",
+									"                            .replaceAll(\"\\\"\",\"\\\\\\\"\");",
+									"    pm.environment.set(\"transcript\", transcript);",
+									"",
+									"    // Gen Insights",
+									"    var genInsights = pm.iterationData.get(\"genInsights\");",
+									"    console.log(\"pcm getInd\", genInsights);",
+									"    if (genInsights) {",
+									"        pm.environment.set(\"genInsights\", JSON.stringify(genInsights));",
+									"    } else {",
+									"        pm.environment.unset(\"genInsights\");",
+									"    }",
+									"}",
+									"",
+									"pm.test(\"Data loaded successfully (run with Postman Runner and add JSON data file)\", () => {",
+									"    // Setup next request ",
+									"    if (pm.environment.get(\"cloud\") == \"SALES\") {",
+									"        pm.execution.setNextRequest(\"Get Related Record ID (Sales Cloud)\");",
+									"    } else if (pm.environment.get(\"cloud\") == \"SERVICE\") {",
+									"        pm.execution.setNextRequest(\"Get Related Record ID (Service Cloud)\");",
+									"    } else if (pm.environment.get(\"cloud\") == \"NONE\") { // Invalid cloud",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Invalid cloud provided\");",
+									"    } ",
+									"",
+									"    if (pm.iterationData.get(\"name\") == null) { // No new data",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"No data provided\");",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "48313189-a394a490-4c66-4fbe-ab4a-006c279a69e2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v56.0/query/?q=SELECT+CreatedDate+FROM+Organization",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v56.0",
+								"query",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT+CreatedDate+FROM+Organization"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Related Record ID (Sales Cloud)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let result = pm.response.json()",
+									"",
+									"let id = null;",
+									"try {",
+									"    id = result.records[0].Id",
+									"} catch (e) {}",
+									"",
+									"if (!id || id.length != 18) {",
+									"    pm.execution.setNextRequest(null);",
+									"",
+									"    pm.test(\"Failed to find ID\", () => pm.expect.fail(\"No ID found for opportunity\"));",
+									"} else {",
+									"    pm.execution.setNextRequest(\"Get Related Person IDs\");",
+									"    pm.environment.set(\"relatedRecordId\", id);",
+									"",
+									"    pm.test(\"Successfully found ID: \" + id, true);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "cfa6f5cf-dfff-4f69-a5f4-30c860407d44"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript",
+								"id": "8a60770b-6770-49d7-834e-f558c0848ba3"
+							}
+						}
+					],
+					"id": "48313189-406beee3-a54a-4dd0-bf83-2dc07ab19005",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v56.0/query/?q=SELECT%20Id%20FROM%20Opportunity%20WHERE%20Name%20=%20'{{relatedRecordName}}'",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v56.0",
+								"query",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT%20Id%20FROM%20Opportunity%20WHERE%20Name%20=%20'{{relatedRecordName}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Related Record ID (Service Cloud)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let result = pm.response.json()",
+									"",
+									"pm.test(\"Successfully found ID\", () => {",
+									"    let id = null;",
+									"    try {",
+									"        id = result.records[0].Id",
+									"    } catch (e) {}",
+									"",
+									"    if (!id || id.length != 18) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"No ID found for case\");",
+									"    } else {",
+									"        pm.environment.set(\"relatedRecordId\", id);",
+									"        pm.execution.setNextRequest(\"Get Related Person IDs\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "e3056623-854b-4d27-b4d3-e44780147e94"
+							}
+						}
+					],
+					"id": "48313189-55e98742-d757-4a22-9c81-2b37a8b8fd32",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v56.0/query/?q=SELECT%20Id%20FROM%20Case%20WHERE%20CaseNumber%20=%20'{{relatedRecordName}}'",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v56.0",
+								"query",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT%20Id%20FROM%20Case%20WHERE%20CaseNumber%20=%20'{{relatedRecordName}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Related Person IDs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6731ad6d-9911-4ae0-887d-c2630bb16881",
+								"exec": [
+									"let result = pm.response.json()",
+									"",
+									"let id = null;",
+									"try {",
+									"    id = result.records[0].Id",
+									"} catch (e) {}",
+									"",
+									"",
+									"// Loop for multiple participants",
+									"// See Pre-reqeust script",
+									"let numParticipants = pm.environment.get(\"numParticipants\");",
+									"let participantNum = pm.environment.get(\"currentParticipantNum\") || 2;  // First participant is the host",
+									"pm.environment.unset(\"currentParticipantRelatedType\");",
+									"pm.environment.unset(\"currentParticipantRelatedName\");",
+									"",
+									"if (!id || id.length != 18) {",
+									"    pm.execution.setNextRequest(null);",
+									"    pm.test(\"Successfully found participant\", () => pm.expect.fail(\"No ID found for target contact\"));",
+									"} else {",
+									"    // Add participant id into internal/external participants list",
+									"    ",
+									"    if (id.startsWith(\"005\")) {",
+									"        // Internal participant (User)",
+									"        pm.test(\"Successfully found internal participant: \" + id);",
+									"        let participantsInternalJson = JSON.parse(pm.environment.get(\"participantsInternalJson\") || \"[]\") || [];",
+									"        participantsInternalJson.push({ id });",
+									"        pm.environment.set(\"participantsInternalJson\", JSON.stringify(participantsInternalJson));",
+									"    } else {",
+									"        // External participant (Contact/Lead)",
+									"        pm.test(\"Successfully found external participant: \" + id);",
+									"        let participantsExternalJson = JSON.parse(pm.environment.get(\"participantsExternalJson\") || \"[]\") || [];",
+									"        participantsExternalJson.push({ id });",
+									"        pm.environment.set(\"participantsExternalJson\", JSON.stringify(participantsExternalJson));",
+									"    }",
+									"}",
+									"",
+									"if (participantNum < numParticipants) {",
+									"    pm.execution.setNextRequest(\"Get Related Person IDs\");",
+									"    pm.environment.set(\"currentParticipantNum\", participantNum+1);",
+									"} else {",
+									"    // Cleanup",
+									"    pm.test(\"No more iterations needed. All participants found\");",
+									"    pm.environment.unset(\"currentParticipantNum\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "815970aa-6b61-47a1-8101-e22f9081fec5",
+								"exec": [
+									"// Loop for multiple participants",
+									"let numParticipants = pm.environment.get(\"numParticipants\");",
+									"let participantNum = pm.environment.get(\"currentParticipantNum\") || 2;  // First participant is the host",
+									"if (participantNum <= numParticipants) {",
+									"    let participants = JSON.parse(pm.environment.get(\"participants\"));",
+									"    pm.environment.set(\"currentParticipantRelatedType\", participants[participantNum-2].relatedPersonType);",
+									"    pm.environment.set(\"currentParticipantRelatedName\", participants[participantNum-2].relatedPersonName);",
+									"    pm.test(\"Getting related person for participant \" + participantNum + \"... (first is host)\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "48313189-8774b8dc-bbb6-4f09-be1a-466315f40371",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v56.0/query/?q=SELECT%20Id%20FROM%20{{currentParticipantRelatedType}}%20WHERE%20Name%20=%20'{{currentParticipantRelatedName}}'",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v56.0",
+								"query",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT%20Id%20FROM%20{{currentParticipantRelatedType}}%20WHERE%20Name%20=%20'{{currentParticipantRelatedName}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Generative Insights Config",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "870a4720-6d51-40cd-89f6-fb1f68e81cad",
+								"exec": [
+									"let result = pm.response.json()",
+									"",
+									"pm.test(\"Successfully processed Gen Insights\", () => {",
+									"    let genInsights = {};",
+									"    try {",
+									"        if (result.records && result.records.length) {",
+									"            for (let insight of result.records) {",
+									"                console.log(insight);",
+									"                genInsights[insight.Label] = insight.ExternalId;",
+									"            }",
+									"        }",
+									"",
+									"        pm.environment.set(\"genInsightsConfig\", JSON.stringify(genInsights));",
+									"    } catch (e) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Error: \", e);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "48313189-300232b1-800b-4c98-adca-8aa0c89d904b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "sforce-call-options",
+								"value": "client=SfdcInternalQA/...",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v56.0/query/?q=SELECT%20Id,Label,ExternalId%20FROM%20SiqCustomInsight%20WHERE%20ChannelType%20=%20'VOICE'%20AND%20Status%20=%20'ENABLED'%20AND%20ModelType%20=%20'GENERATIVE'",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v56.0",
+								"query",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT%20Id,Label,ExternalId%20FROM%20SiqCustomInsight%20WHERE%20ChannelType%20=%20'VOICE'%20AND%20Status%20=%20'ENABLED'%20AND%20ModelType%20=%20'GENERATIVE'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48313189-11c172f3-dc37-431c-90f6-c7b9670ae9cc",
+			"description": "These calls set up the environment for a specific voice call. Specifically, they load the call structure, insights, transcript, and metadata from a file, determine the call date, determine the related record ID, and determine the target contact ID.\n\n**Important**:\n\n*   This folder will need to be re-run **every time** a new call is created (e.g., run through the process top-to-bottom every time to create a new call)\n*   **The call data file must be included when you use the Runner (providing all call data)**"
+		},
+		{
+			"name": "Create Call",
+			"item": [
+				{
+					"name": "Create Video Call via Manual Upload API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Successfully created call object\", () => {",
+									"    let resp = pm.response.json();",
+									"    if (resp.calls[0].errorMsg != null) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to create call: \" + resp.calls[0].errorMsg);",
+									"    }",
+									"    pm.test(\"Created call Id: \" + resp.calls[0].videoCallId);",
+									"",
+									"    pm.environment.set(\"videoCallId\", resp.calls[0].videoCallId);",
+									"    pm.environment.set(\"videoCallRecordingId\", resp.calls[0].externalId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "5b978676-14ef-45de-b51e-e6f31c2ee147"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "7cfec24f-87c2-4d29-b528-146d293127f9"
+							}
+						}
+					],
+					"id": "48313189-99d56134-d8b3-46d8-ae4f-91f8745b997c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"calls\": [\n        {\n            \"eventId\": null,\n            \"title\": \"{{name}}\",\n            \"startDateTime\": \"{{cStartDateTime}}\",\n            \"endDateTime\": \"{{cEndDateTime}}\",\n            \"relatedRecordId\": \"{{relatedRecordId}}\",\n            \"ownerId\": \"{{userId}}\",\n            \"vendorName\": \"INTERNAL\",\n            \"recordingDuration\": {{recordingDuration}},\n            \"recordingFormat\": \"{{recordingFormat}}\",\n            \"recordingSize\": 40000000,\n            \"internalReps\": {{participantsInternalJson}},\n            \"customers\": {{participantsExternalJson}},\n            \"externalId\": \"{{externalId}}\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v63.0/videocalls",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v63.0",
+								"videocalls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get VideoCall",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Successfully found call object\", () => {",
+									"    let resp = pm.response.json();",
+									"    if (Array.isArray(resp)) {",
+									"        pm.execution.setNextRequest(null);",
+									"        let errMsg = \"\";",
+									"        try {",
+									"            errMsg = resp[0].message;",
+									"        } catch (e) {};",
+									"        pm.expect.fail(\"Failed to find call: \" + errMsg);",
+									"    }",
+									"    pm.test(\"Found call Id: \" + resp.Id);",
+									"",
+									"    pm.environment.set(\"videoCallId\", resp.Id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "84fd4c9f-f1f7-4947-bda0-38d270a48d94"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "c435454c-1229-4905-acd0-1aa0dd7ee164"
+							}
+						}
+					],
+					"id": "48313189-a2965e2e-70d9-4fb4-80d8-d2371fcc3962",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v63.0/sobjects/videocall/{{videoCallId}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v63.0",
+								"sobjects",
+								"videocall",
+								"{{videoCallId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get VideoCallRecording",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Successfully found recording object\", () => {",
+									"    let resp = pm.response.json();",
+									"    if (Array.isArray(resp)) {",
+									"        pm.execution.setNextRequest(null);",
+									"        let errMsg = \"\";",
+									"        try {",
+									"            errMsg = resp[0].message;",
+									"        } catch (e) {};",
+									"        pm.expect.fail(\"Failed to find recording: \" + errMsg);",
+									"    }",
+									"    pm.test(\"Found recording Id: \" + resp.Id);",
+									"",
+									"    pm.environment.set(\"videoCallRecordingId\", resp.Id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "07c14521-ec92-42ae-b240-6eff3f151af7"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "6c907604-81ab-4da1-8880-1a3358bdc9ee"
+							}
+						}
+					],
+					"id": "48313189-e1d1e518-46bf-40c4-acee-24d800d04ead",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v63.0/sobjects/videocallrecording/{{videoCallRecordingId}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v63.0",
+								"sobjects",
+								"videocallrecording",
+								"{{videoCallRecordingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get VideoCallParticipants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Successfully found participants\", () => {",
+									"    let resp = pm.response.json();",
+									"    if (Array.isArray(resp)) {",
+									"        pm.execution.setNextRequest(null);",
+									"        let errMsg = \"\";",
+									"        try {",
+									"            errMsg = resp[0].message;",
+									"        } catch (e) {};",
+									"        pm.expect.fail(\"Failed to find participants: \" + errMsg);",
+									"    }",
+									"",
+									"    // Get existing participant related person information",
+									"    let participantsInternalJson = JSON.parse(pm.environment.get(\"participantsInternalJson\"));",
+									"    let participantsExternalJson = JSON.parse(pm.environment.get(\"participantsExternalJson\"));",
+									"    let participants = [...participantsInternalJson, ...participantsExternalJson];",
+									"",
+									"    // Build a map from relatedPersonId -> VideoCallParticipant Id",
+									"    let relatedRecordIdToVCPIdMap = {};",
+									"    resp.records.forEach(vcp => relatedRecordIdToVCPIdMap[vcp.RelatedPersonId] = vcp.Id);",
+									"",
+									"    // Add data from map into list so each participant has a VideoCallParticipant Id",
+									"    participants.map(participant => participant.vcpId = relatedRecordIdToVCPIdMap[participant.id]);",
+									"",
+									"    // Finally, set this participant info in the environment and unstructured data",
+									"    for (let i=0; i<participants.length; i++) {",
+									"        let participantNum = i+1;",
+									"",
+									"        var moments = pm.environment.get(\"moments\").replaceAll(\"{{participantId\" + participantNum + \"}}\", participants[i].vcpId);",
+									"        pm.environment.set(\"moments\", moments);",
+									"",
+									"        var structure = pm.environment.get(\"diarization\").replaceAll(\"{{participantId\" + participantNum + \"}}\", participants[i].vcpId);",
+									"        pm.environment.set(\"diarization\", structure);",
+									"",
+									"        var transcript = pm.environment.get(\"transcript\").replaceAll(\"{{participantId\" + participantNum + \"}}\", participants[i].vcpId);",
+									"        pm.environment.set(\"transcript\", transcript);",
+									"    }",
+									"",
+									"    pm.test(\"Found participants: \" + JSON.stringify(participants), true);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "c5f5b0d9-3c4d-4e6f-9742-2a973d198bb1"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "931feaa1-57c4-47f4-bcca-ebbb36d74825"
+							}
+						}
+					],
+					"id": "48313189-1476d846-576b-4beb-bf19-88fc8df0ec01",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint}}/services/data/v63.0/query/?q=SELECT%20Id%2CRelatedPersonId%20FROM%20VideoCallParticipant%20WHERE%20VideoCallId%20=%20'{{videoCallId}}'",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v63.0",
+								"query",
+								""
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT%20Id%2CRelatedPersonId%20FROM%20VideoCallParticipant%20WHERE%20VideoCallId%20=%20'{{videoCallId}}'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch Video Call",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Successfully patched object\", () => {",
+									"    if (pm.response.code != 204) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to patch\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "2911af8b-e8e7-419e-9363-c7976a66cff6"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "29be5d74-bf2d-4143-bed4-28f6e5348cbf"
+							}
+						}
+					],
+					"id": "48313189-f1c88ee7-8c30-4b4d-a281-45626a60d9e0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"MeetingType\": \"EXTERNAL\",\n    \"IntelligenceScore\": 90,\n    \"TranscribedLanguage\": \"{{language}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v63.0/sobjects/videocall/{{videoCallId}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v63.0",
+								"sobjects",
+								"videocall",
+								"{{videoCallId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch Video Call Recording",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Successfully patched object\", () => {",
+									"    if (pm.response.code != 204) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to patch\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "74fe4f03-0409-4ae6-9d23-af2b7e043766"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "864390e5-990b-48e6-a6d1-eb59e9edf075"
+							}
+						}
+					],
+					"id": "48313189-bdc39a77-f094-4adf-ba85-34647225d797",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"FileType\": \"{{recordingFormat}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v63.0/sobjects/videocallrecording/{{videoCallRecordingId}}",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v63.0",
+								"sobjects",
+								"videocallrecording",
+								"{{videoCallRecordingId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48313189-3995e842-1fec-4366-acc7-a5ba911c4bc5",
+			"description": "This folder will create the call entities."
+		},
+		{
+			"name": "[OPTIONAL] [Run Manually to create recording] Upload Video File",
+			"item": [
+				{
+					"name": "Upload Video Recording",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"File uploaded successfully\", () => {",
+									"    if (pm.response.code != 204) {",
+									"        let json = pm.response.json();",
+									"        if (pm.response.code == 400 && json[0].message == \"Missing recording file.\") {",
+									"            pm.expect.fail(\"File not attached. Make sure to attach the file and run this manually [Not with Runner]\");",
+									"        } else {",
+									"            pm.expect.fail(\"Failed to upload file. Unexpected error\");",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "eb8cc8de-9cc2-42b3-8b1f-3911528c99cb"
+							}
+						}
+					],
+					"id": "48313189-1edb5aa7-1926-4322-9a50-39df546b95ae",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "videoFileData",
+									"type": "file",
+									"src": "/Users/amous/Documents/ECI Data/ECI SDO Video Calls/video_3.mp4"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v64.0/videocalls/{{videoCallRecordingId}}/recording_upload",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v64.0",
+								"videocalls",
+								"{{videoCallRecordingId}}",
+								"recording_upload"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48313189-eee48117-af98-4a90-9d92-9af99fd2ed2e",
+			"description": "This folder will fetch the details to upload a call to S3, and perform the upload."
+		},
+		{
+			"name": "Create Metadata",
+			"item": [
+				{
+					"name": "Create Call Structure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successfully queued\", () => {",
+									"    let success;",
+									"    try {",
+									"        success = pm.response.json().success;",
+									"    } catch (e) {}",
+									"",
+									"    if (pm.environment.get(\"runCount\") === undefined || pm.environment.get(\"maxRuns\") === undefined) {",
+									"        pm.environment.set(\"runCount\", 1);",
+									"        pm.environment.set(\"maxRuns\", 3);",
+									"    }",
+									"    pm.test(\"Run \" + pm.environment.get(\"runCount\") + \" of \" + pm.environment.get(\"maxRuns\"));",
+									"",
+									"    if (!success) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to queue\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "2a020a54-3d65-41f9-adf6-3723f20e6564"
+							}
+						}
+					],
+					"id": "48313189-57ae8201-db0c-474a-b700-dff2f59177f2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"CreatedDate\": \"{{cStartDateTime}}\",\n    \"CreatedById\": \"{{userId}}\",\n    \"OrganizationId\": \"{{orgId}}\",\n    \"UserId\": \"{{userId}}\",\n    \"CallDateTime\": \"{{cStartDateTime}}\", \n    \"CallId\": \"{{videoCallId}}\",\n    \"RecordingId\": \"{{videoCallRecordingId}}\",\n    \"ConversationId\": \"{{videoCallRecordingId}}\",\n    \"ExternalId\": \"internal:videocall:{{externalId}}\", \n    \"DoesSpeakersMetadataExist\": false,\n    \"Diarization\": \"{{diarization}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v58.0/sobjects/CICallStructureEvent",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v58.0",
+								"sobjects",
+								"CICallStructureEvent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Call Insights",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successfully queued\", () => {",
+									"    let success;",
+									"    try {",
+									"        success = pm.response.json().success;",
+									"    } catch (e) {}",
+									"    ",
+									"    if (pm.environment.get(\"runCount\") !== undefined || pm.environment.get(\"maxRuns\") !== undefined) {",
+									"        pm.test(\"Run \" + pm.environment.get(\"runCount\") + \" of \" + pm.environment.get(\"maxRuns\"));",
+									"    }",
+									"",
+									"    if (!success) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to queue\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "72cb3c77-6e7a-4fa1-9d09-1b8b058b0967"
+							}
+						}
+					],
+					"id": "48313189-ae9b9649-bc36-4058-bb4a-9500c49b8c03",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ConversationId\":\"{{videoCallRecordingId}}\",\n    \"UserId\":\"{{userId}}\",\n    \"TranscriptionCreationDate\":\"{{cStartDateTime}}\",\n    \"Moments\":\"{{moments}}\",\n    \"OrganizationId\":\"{{orgId}}\",\n    \"ChannelType\":\"VIDEO\",\n    \"CallDateTime\":\"{{cStartDateTime}}\",\n    \"TranscribedLanguage\": \"{{language}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v58.0/sobjects/CIInsightsEvent",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v58.0",
+								"sobjects",
+								"CIInsightsEvent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Call Transcript",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successfully queued\", () => {",
+									"    let success;",
+									"    try {",
+									"        success = pm.response.json().success;",
+									"    } catch (e) {}",
+									"",
+									"",
+									"    // Loop to run each of the CI*Event endpoints 3 times",
+									"    if (pm.environment.get(\"runCount\") < pm.environment.get(\"maxRuns\")) {",
+									"        let newVal = 1 + 1*pm.environment.get(\"runCount\");",
+									"        pm.environment.set(\"runCount\", newVal);",
+									"        pm.test(\"Run \" + pm.environment.get(\"runCount\") + \" of \" + pm.environment.get(\"maxRuns\"));",
+									"        setTimeout(() => {",
+									"            // Wait between runs to ensure SIQ picked up the call",
+									"            pm.execution.setNextRequest(\"Create Call Structure\");",
+									"        }, 1500);",
+									"    } else if (pm.environment.get(\"runCount\") !== undefined) {",
+									"        pm.test(\"Last run (ran \" + pm.environment.get(\"maxRuns\") + \" times). Cleaning up...\", () => {});",
+									"        // Run cleanup on all temp env vars",
+									"        pm.environment.unset(\"runCount\");",
+									"        pm.environment.unset(\"maxRuns\");",
+									"    }",
+									"",
+									"    if (!success) {",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to queue\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "b291dd09-77b4-4b07-affe-c0f38af3dcdb"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "fb3a1777-e7c2-4431-bba9-f76ab7c2c3b9"
+							}
+						}
+					],
+					"id": "48313189-48c9570b-9453-4c53-adc4-0a5ae4306b55",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrganizationId\": \"{{orgId}}\",\n    \"ConversationId\": \"{{videoCallRecordingId}}\",\n    \"CallId\": \"{{videoCallId}}\",\n    \"RecordingId\": \"{{videoCallRecordingId}}\",\n    \"TranscriptionCreationDate\": \"{{$isoTimestamp}}\",\n    \"BaseStartTime\": {{baseTranscriptStartTime}},\n    \"IsTranscriptTruncated\": false,\n    \"TranscriptEntries\": \"{{transcript}}\",\n    \"TranscribedLanguage\": \"{{language}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v58.0/sobjects/CITranscriptEvent",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v58.0",
+								"sobjects",
+								"CITranscriptEvent"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48313189-ec260414-1b96-4456-83f7-fd7ca84d8c1b",
+			"description": "This folder will set up the Ofek data for the call, including the structure, insights, and transcript. The tests on these calls may not reflect whether or not the data was processed successfully, as the calls do not return errors in the Ofek payloads."
+		},
+		{
+			"name": "[OPTIONAL] Gen Insights",
+			"item": [
+				{
+					"name": "Create Call Insights - Mock Gen Insights",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a9d30c4a-0082-4d66-9e93-6f1f2d375ea9",
+								"exec": [
+									"pm.test(\"Successfully queued\", () => {",
+									"    let success;",
+									"    try {",
+									"        success = pm.response.json().success;",
+									"    } catch (e) {}",
+									"",
+									"    // Cleanup",
+									"    pm.environment.unset(\"genInsightsPayload\");",
+									"    for (let i=1; i<=pm.environment.get(\"numParticipants\"); i++) {",
+									"        pm.environment.unset(\"participantId\" + i);",
+									"        pm.environment.unset(\"participantRelatedId\" + i);",
+									"    }",
+									"",
+									"    console.log('pc', success);",
+									"",
+									"    if (!success) {",
+									"        console.log('hello')",
+									"        pm.execution.setNextRequest(null);",
+									"        pm.expect.fail(\"Failed to queue\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b99834f6-b706-434e-a4e6-4a6c82ce1b98",
+								"exec": [
+									"/* Example payload",
+									"[{\\\"InsightName\\\": \\\"Key Takeaways\\\" , \\\"GeneratedText\\\": \\\"The customer is interested in our new product line and sees potential for integration with their existing systems. They are currently facing challenges with their current vendor and are looking for a more reliable solution. The decision-making process involves multiple stakeholders, including the IT and procurement departments.\\\" , \\\"InsightTypeId\\\": \\\"e9763e45-cde8-4f42-afc9-8128da2b24dc\\\"}, {\\\"InsightName\\\": \\\"Challenges and Concerns\\\" , \\\"GeneratedText\\\": \\\"The customer is worried about the cost implications and budget constraints. They have concerns about the compatibility of our product with their existing systems. There is a need for a clear migration plan to ensure minimal disruption to their operations.\\\" , \\\"InsightTypeId\\\": \\\"eebf77af-7e24-42e2-8dfc-092193a4c157\\\"}, {\\\"InsightName\\\": \\\"Business Opportunities\\\" , \\\"GeneratedText\\\": \\\"Potential to upsell our premium support package given their dissatisfaction with current vendor support. Opportunity to introduce our complementary products that can enhance their existing setup. Possibility of a long-term partnership as they are looking for a reliable vendor for future projects.\\\"}]",
+									"*/",
+									"",
+									"if (pm.environment.get(\"genInsights\") && pm.environment.get(\"genInsightsConfig\")) {",
+									"    var genInsights = JSON.parse(pm.environment.get(\"genInsights\"));  // Gen Insights data missing InsightTypeId",
+									"    var genInsightsConfig = JSON.parse(pm.environment.get(\"genInsightsConfig\"));  // Map from InsightName -> InsightTypeId",
+									"",
+									"    // Populate InsightTypeId",
+									"    let processedGenInsights = [];",
+									"    for (let genInsight of genInsights) {",
+									"        if (genInsightsConfig[genInsight.InsightName]) {",
+									"            genInsight.InsightTypeId = genInsightsConfig[genInsight.InsightName];",
+									"            processedGenInsights.push(genInsight);",
+									"        }",
+									"    }",
+									"",
+									"    ",
+									"    if (processedGenInsights.length == 0) {",
+									"        // If there are no configured insights, skip this request.",
+									"        pm.test(\"[SKIPPED] Skipping as no gen insights are configured on the org\", true);",
+									"        pm.execution.skipRequest();",
+									"    } else {",
+									"        pm.test(\"[Optional] All Gen Insights are not configured on this org\", () => {",
+									"            if (processedGenInsights.length != genInsights.length) {",
+									"                let foundNames = processedGenInsights.map(i => i.InsightName);",
+									"                let expectedNames = genInsights.map(i => i.InsightName);",
+									"                let missingNames = expectedNames.filter(i => !foundNames.includes(i));",
+									"                pm.expect.fail(\"Gen Insight names expected but NOT found on org: \" + missingNames + \". Creating \" + foundNames.length + \" of \" + expectedNames.length + \" insights.\");",
+									"            }",
+									"        });",
+									"    }",
+									"",
+									"    pm.environment.set(\"genInsightsPayload\", JSON.stringify(processedGenInsights).replaceAll(\"\\\"\",\"\\\\\\\"\"));",
+									"} else {",
+									"    pm.test(\"Skipping as Gen Insights are not included in payload\", true);",
+									"    pm.environment.set(\"genInsightsPayload\", \"\");",
+									"    pm.execution.skipRequest();",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "48313189-ab2da377-452a-473f-a7ca-050ca754455e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ConversationId\":\"{{videoCallRecordingId}}\",\n    \"UserId\":\"{{userId}}\",\n    \"TranscriptionCreationDate\":\"{{cStartDateTime}}\",\n    \"OrganizationId\":\"{{orgId}}\",\n    \"ChannelType\":\"VIDEO\",\n    \"CallDateTime\":\"{{cStartDateTime}}\",\n    \"GenerativeInsights\": \"{{genInsightsPayload}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v61.0/sobjects/CIInsightsEvent",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v61.0",
+								"sobjects",
+								"CIInsightsEvent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Call Insights - Trigger Gen Insights",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successfully queued\", () => {",
+									"    let success;",
+									"    try {",
+									"        success = pm.response.json().success;",
+									"    } catch (e) {}",
+									"",
+									"    if (!success) {",
+									"        pm.expect.fail(\"Failed to queue\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "199fc2c4-aafb-49ab-a4b4-facee1ca438c"
+							}
+						}
+					],
+					"id": "48313189-9d13a75d-bf46-492c-b098-c056f535c686",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Sforce-Call-Options",
+								"value": "client=SfdcInternalQA/..;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ConversationId\":\"{{videoCallId}}\",\n    \"UserId\":\"{{userId}}\",\n    \"TranscriptionCreationDate\":\"{{cStartDateTime}}\",\n    \"Moments\":\"{{moments}}\",\n    \"OrganizationId\":\"{{orgId}}\",\n    \"ChannelType\":\"VIDEO\",\n    \"CallDateTime\":\"{{cStartDateTime}}\",\n    \"TranscribedLanguage\": \"{{language}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/services/data/v58.0/sobjects/CIInsightsEvent",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"services",
+								"data",
+								"v58.0",
+								"sobjects",
+								"CIInsightsEvent"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48313189-06a2c28f-f531-484c-84bf-3c6de9747578"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				],
+				"id": "8ceffee0-b96f-496e-a08c-184adba7754b"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				],
+				"id": "813f0784-442b-4da8-b886-245de2fbf483"
+			}
+		}
+	]
+}
