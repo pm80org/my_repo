@@ -35,9 +35,7 @@
 									"    }",
 									"});"
 								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"type": "text/javascript"
 							}
 						},
 						{
@@ -47,16 +45,11 @@
 								"exec": [
 									"console.log(\"hello\");"
 								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"type": "text/javascript"
 							}
 						}
 					],
 					"id": "48313189-8ba99697-1ed5-4551-8739-dd9cfc8b5c46",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "POST",
 						"header": [
@@ -203,8 +196,7 @@
 									"pm.environment.set(\"transcript\", rawTranscript);",
 									""
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						},
 						{
@@ -287,15 +279,11 @@
 									"    }   ",
 									"});"
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						}
 					],
 					"id": "48313189-a394a490-4c66-4fbe-ab4a-006c279a69e2",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -357,23 +345,18 @@
 									"}"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "cfa6f5cf-dfff-4f69-a5f4-30c860407d44"
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"packages": {},
 								"type": "text/javascript",
 								"id": "8a60770b-6770-49d7-834e-f558c0848ba3"
 							}
 						}
 					],
 					"id": "48313189-406beee3-a54a-4dd0-bf83-2dc07ab19005",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -434,15 +417,11 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "e3056623-854b-4d27-b4d3-e44780147e94"
 							}
 						}
 					],
 					"id": "48313189-55e98742-d757-4a22-9c81-2b37a8b8fd32",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -531,8 +510,7 @@
 									"    pm.environment.unset(\"currentParticipantNum\");",
 									"}"
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						},
 						{
@@ -550,15 +528,11 @@
 									"    pm.test(\"Getting related person for participant \" + participantNum + \"... (first is host)\");",
 									"}"
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						}
 					],
 					"id": "48313189-8774b8dc-bbb6-4f09-be1a-466315f40371",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -621,16 +595,11 @@
 									"    }",
 									"});"
 								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"type": "text/javascript"
 							}
 						}
 					],
 					"id": "48313189-300232b1-800b-4c98-adca-8aa0c89d904b",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -700,7 +669,6 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "5b978676-14ef-45de-b51e-e6f31c2ee147"
 							}
 						},
@@ -713,15 +681,11 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "7cfec24f-87c2-4d29-b528-146d293127f9"
 							}
 						}
 					],
 					"id": "48313189-99d56134-d8b3-46d8-ae4f-91f8745b997c",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -796,9 +760,7 @@
 									"",
 									"});"
 								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"type": "text/javascript"
 							}
 						},
 						{
@@ -810,16 +772,11 @@
 									"var externalId = require('uuid');",
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"type": "text/javascript"
 							}
 						}
 					],
 					"id": "48313189-a2965e2e-70d9-4fb4-80d8-d2371fcc3962",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -880,7 +837,6 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "07c14521-ec92-42ae-b240-6eff3f151af7"
 							}
 						},
@@ -893,15 +849,11 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "6c907604-81ab-4da1-8880-1a3358bdc9ee"
 							}
 						}
 					],
 					"id": "48313189-e1d1e518-46bf-40c4-acee-24d800d04ead",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -987,7 +939,6 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "c5f5b0d9-3c4d-4e6f-9742-2a973d198bb1"
 							}
 						},
@@ -998,15 +949,11 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "931feaa1-57c4-47f4-bcca-ebbb36d74825"
 							}
 						}
 					],
 					"id": "48313189-1476d846-576b-4beb-bf19-88fc8df0ec01",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1064,7 +1011,6 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "2911af8b-e8e7-419e-9363-c7976a66cff6"
 							}
 						},
@@ -1077,15 +1023,11 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "29be5d74-bf2d-4143-bed4-28f6e5348cbf"
 							}
 						}
 					],
 					"id": "48313189-f1c88ee7-8c30-4b4d-a281-45626a60d9e0",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1147,7 +1089,6 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "74fe4f03-0409-4ae6-9d23-af2b7e043766"
 							}
 						},
@@ -1160,15 +1101,11 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "864390e5-990b-48e6-a6d1-eb59e9edf075"
 							}
 						}
 					],
 					"id": "48313189-bdc39a77-f094-4adf-ba85-34647225d797",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1240,15 +1177,11 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "eb8cc8de-9cc2-42b3-8b1f-3911528c99cb"
 							}
 						}
 					],
 					"id": "48313189-1edb5aa7-1926-4322-9a50-39df546b95ae",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1329,15 +1262,11 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "2a020a54-3d65-41f9-adf6-3723f20e6564"
 							}
 						}
 					],
 					"id": "48313189-57ae8201-db0c-474a-b700-dff2f59177f2",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1406,15 +1335,11 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "72cb3c77-6e7a-4fa1-9d09-1b8b058b0967"
 							}
 						}
 					],
 					"id": "48313189-ae9b9649-bc36-4058-bb4a-9500c49b8c03",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1496,7 +1421,6 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "b291dd09-77b4-4b07-affe-c0f38af3dcdb"
 							}
 						},
@@ -1507,15 +1431,11 @@
 									""
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "fb3a1777-e7c2-4431-bba9-f76ab7c2c3b9"
 							}
 						}
 					],
 					"id": "48313189-48c9570b-9453-4c53-adc4-0a5ae4306b55",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1597,8 +1517,7 @@
 									"    }",
 									"});"
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						},
 						{
@@ -1646,15 +1565,11 @@
 									"    pm.execution.skipRequest();",
 									"}"
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						}
 					],
 					"id": "48313189-ab2da377-452a-473f-a7ca-050ca754455e",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1718,15 +1633,11 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
 								"id": "199fc2c4-aafb-49ab-a4b4-facee1ca438c"
 							}
 						}
 					],
 					"id": "48313189-9d13a75d-bf46-492c-b098-c056f535c686",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1773,30 +1684,6 @@
 				}
 			],
 			"id": "48313189-06a2c28f-f531-484c-84bf-3c6de9747578"
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				],
-				"id": "8ceffee0-b96f-496e-a08c-184adba7754b"
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				],
-				"id": "813f0784-442b-4da8-b886-245de2fbf483"
-			}
 		}
 	]
 }
