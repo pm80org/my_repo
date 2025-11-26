@@ -1720,18 +1720,6 @@
 				}
 			],
 			"id": "48313189-06a2c28f-f531-484c-84bf-3c6de9747578"
-		},
-		{
-			"name": "New Request",
-			"id": "48313189-b5aaed59-ea26-4e90-a740-34ee8fb02997",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
 		}
 	]
 }
