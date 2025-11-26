@@ -733,9 +733,23 @@
 					"name": "Get VideoCall",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"id": "645ac7f3-d0f5-4ecb-a016-a6e998b483d7",
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
-								"id": "84fd4c9f-f1f7-4947-bda0-38d270a48d94",
+								"id": "bef62aad-f61a-4512-a0a3-b1e85c3058cd",
 								"exec": [
 									"",
 									"pm.test(\"Successfully found call object\", () => {",
@@ -749,30 +763,50 @@
 									"        pm.expect.fail(\"Failed to find call: \" + errMsg);",
 									"    }",
 									"",
-									"    // world",
-									"    // world 2",
 									"    pm.test(\"Found call Id: \" + resp.Id);",
 									"",
 									"    pm.environment.set(\"videoCallId\", resp.Id);",
 									"",
 									"",
-									"    // hello",
+									"    const videoCallId = 1;",
+									"",
+									"    pm.environment.set(\"videoCallRecordingId\", resp.Id);",
+									"",
+									"    const ARRAY_ENV_KEY = \"my_array\";",
+									"    ",
+									"        // ---- LOAD EXISTING ARRAY (OR CREATE NEW) ----",
+									"    let arrRaw = pm.environment.get(ARRAY_ENV_KEY);",
+									"    let arr;",
+									"",
+									"    try {",
+									"        if (arrRaw) {",
+									"            arr = JSON.parse(arrRaw);",
+									"            if (!Array.isArray(arr)) {",
+									"                arr = [];",
+									"            }",
+									"        } else {",
+									"            arr = [];",
+									"        }",
+									"    } catch (e) {",
+									"        // If JSON parse fails, start fresh",
+									"        arr = [];",
+									"    }",
+									"",
+									"    // ---- CREATE \"TUPLE\" OF THREE VALUES ----",
+									"    // You can also use [v1, v2, v3] if you prefer pure array-style tuple.",
+									"    const qaVideoCallId = pm.iterationData.get('qaVideoCallId');",
+									"    const rowNumber = pm.iterationData.get('rowNumber');",
+									"    const tuple = [];",
+									"",
+									"    // ---- PUSH AND SAVE BACK TO ENVIRONMENT ----",
+									"    arr.push(tuple);",
+									"    pm.environment.set(ARRAY_ENV_KEY, JSON.stringify(arr));",
 									"",
 									"});"
 								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "c435454c-1229-4905-acd0-1aa0dd7ee164",
-								"exec": [
-									"// Each time a call is created, generate new externalId",
-									"var externalId = require('uuid');",
-									"pm.environment.set(\"externalId\", externalId.v4());"
-								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
