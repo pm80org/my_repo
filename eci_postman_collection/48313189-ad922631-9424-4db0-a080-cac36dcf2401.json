@@ -34,7 +34,6 @@
 									"        pm.expect.fail(\"Failed\");",
 									"    }",
 									"",
-									"    // hey - 1",
 									"});"
 								],
 								"type": "text/javascript",
