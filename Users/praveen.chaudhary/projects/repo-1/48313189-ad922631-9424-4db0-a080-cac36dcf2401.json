@@ -819,6 +819,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "07c14521-ec92-42ae-b240-6eff3f151af7",
 								"exec": [
 									"",
 									"pm.test(\"Successfully found recording object\", () => {",
@@ -837,19 +838,22 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "07c14521-ec92-42ae-b240-6eff3f151af7"
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "6c907604-81ab-4da1-8880-1a3358bdc9ee",
 								"exec": [
 									"// Each time a call is created, generate new externalId",
 									"var externalId = require('uuid');",
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"id": "6c907604-81ab-4da1-8880-1a3358bdc9ee"
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
