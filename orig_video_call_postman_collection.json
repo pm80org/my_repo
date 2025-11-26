@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "48313189-ad922631-9424-4db0-a080-cac36dcf2401",
-		"name": "PCM1 - ECI Video Call Upload [v3.1]",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"_postman_id": "37e9bc41-19ef-4422-b2fb-f56ef5560de1",
+		"name": "ECI Video Call Upload [v3.1]",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38567366"
 	},
 	"item": [
 		{
@@ -14,7 +15,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3783a898-0a04-48b2-82b9-b8e5c21f1f85",
 								"exec": [
 									"pm.test(\"Successful login\", () => {",
 									"    try {",
@@ -33,29 +33,23 @@
 									"        pm.execution.setNextRequest(null);",
 									"        pm.expect.fail(\"Failed\");",
 									"    }",
-									"",
-									"    // hey - 1",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"packages": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "dc07915c-0435-4212-93da-d8bf9b8f1462",
 								"exec": [
-									"console.log(\"hello\");"
+									""
 								],
 								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-8ba99697-1ed5-4551-8739-dd9cfc8b5c46",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -95,7 +89,6 @@
 					"response": []
 				}
 			],
-			"id": "48313189-e9b0df68-32e3-437a-8bab-c887dbd7af63",
 			"description": "Logs into the org to get a session token. Required to run all of the subsequent calls.\n\n**Notes:**\n\n- The token will expire and this call may need to be re-run if you leave the process for awhile\n- This call will not interfere with any call data in the environment"
 		},
 		{
@@ -107,10 +100,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f20e6bd4-718e-419b-8483-bae43e1c78fc",
 								"exec": [
 									"let result = pm.response.json()",
-									"console.log('pcm')",
+									"",
 									"let createdDate = null;",
 									"let noViewSetup = null;",
 									"",
@@ -202,13 +194,13 @@
 									"pm.environment.set(\"transcript\", rawTranscript);",
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "2121a100-2ced-4a64-882b-65bdf36a263d",
 								"exec": [
 									"/*let rawData = pm.iterationData.get(\"calls\");",
 									"if (!rawData) {",
@@ -222,8 +214,6 @@
 									"",
 									"let currIndex = pm.environment.get(\"callCount\")-1;",
 									"let rawCallData = rawData[currIndex];*/",
-									"console.log('here');",
-									"",
 									"if (pm.iterationData.get(\"name\") != null) {",
 									"    // Copy over JSON data",
 									"    pm.environment.set(\"cloud\", pm.iterationData.get(\"cloud\"));",
@@ -260,7 +250,6 @@
 									"",
 									"    // Gen Insights",
 									"    var genInsights = pm.iterationData.get(\"genInsights\");",
-									"    console.log(\"pcm getInd\", genInsights);",
 									"    if (genInsights) {",
 									"        pm.environment.set(\"genInsights\", JSON.stringify(genInsights));",
 									"    } else {",
@@ -285,11 +274,11 @@
 									"    }   ",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-a394a490-4c66-4fbe-ab4a-006c279a69e2",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -351,18 +340,17 @@
 									"}"
 								],
 								"type": "text/javascript",
-								"id": "cfa6f5cf-dfff-4f69-a5f4-30c860407d44"
+								"packages": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"type": "text/javascript",
-								"id": "8a60770b-6770-49d7-834e-f558c0848ba3"
+								"packages": {},
+								"type": "text/javascript"
 							}
 						}
 					],
-					"id": "48313189-406beee3-a54a-4dd0-bf83-2dc07ab19005",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -423,11 +411,10 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "e3056623-854b-4d27-b4d3-e44780147e94"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-55e98742-d757-4a22-9c81-2b37a8b8fd32",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -469,7 +456,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6731ad6d-9911-4ae0-887d-c2630bb16881",
 								"exec": [
 									"let result = pm.response.json()",
 									"",
@@ -516,13 +502,13 @@
 									"    pm.environment.unset(\"currentParticipantNum\");",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "815970aa-6b61-47a1-8101-e22f9081fec5",
 								"exec": [
 									"// Loop for multiple participants",
 									"let numParticipants = pm.environment.get(\"numParticipants\");",
@@ -534,11 +520,11 @@
 									"    pm.test(\"Getting related person for participant \" + participantNum + \"... (first is host)\");",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-8774b8dc-bbb6-4f09-be1a-466315f40371",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -580,7 +566,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "870a4720-6d51-40cd-89f6-fb1f68e81cad",
 								"exec": [
 									"let result = pm.response.json()",
 									"",
@@ -601,11 +586,11 @@
 									"    }",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-300232b1-800b-4c98-adca-8aa0c89d904b",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -648,7 +633,6 @@
 					"response": []
 				}
 			],
-			"id": "48313189-11c172f3-dc37-431c-90f6-c7b9670ae9cc",
 			"description": "These calls set up the environment for a specific voice call. Specifically, they load the call structure, insights, transcript, and metadata from a file, determine the call date, determine the related record ID, and determine the target contact ID.\n\n**Important**:\n\n*   This folder will need to be re-run **every time** a new call is created (e.g., run through the process top-to-bottom every time to create a new call)\n*   **The call data file must be included when you use the Runner (providing all call data)**"
 		},
 		{
@@ -675,7 +659,7 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "5b978676-14ef-45de-b51e-e6f31c2ee147"
+								"packages": {}
 							}
 						},
 						{
@@ -687,11 +671,10 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"id": "7cfec24f-87c2-4d29-b528-146d293127f9"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-99d56134-d8b3-46d8-ae4f-91f8745b997c",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -739,23 +722,8 @@
 					"name": "Get VideoCall",
 					"event": [
 						{
-							"listen": "prerequest",
-							"script": {
-								"id": "645ac7f3-d0f5-4ecb-a016-a6e998b483d7",
-								"exec": [
-									"// Each time a call is created, generate new externalId",
-									"var externalId = require('uuid');",
-									"pm.environment.set(\"externalId\", externalId.v4());"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						},
-						{
 							"listen": "test",
 							"script": {
-								"id": "bef62aad-f61a-4512-a0a3-b1e85c3058cd",
 								"exec": [
 									"",
 									"pm.test(\"Successfully found call object\", () => {",
@@ -768,53 +736,28 @@
 									"        } catch (e) {};",
 									"        pm.expect.fail(\"Failed to find call: \" + errMsg);",
 									"    }",
-									"",
 									"    pm.test(\"Found call Id: \" + resp.Id);",
 									"",
 									"    pm.environment.set(\"videoCallId\", resp.Id);",
-									"",
-									"    // ----  MY CODE   ------",
-									"",
-									"    const ARRAY_ENV_KEY = \"my_array\";",
-									"    ",
-									"        // ---- LOAD EXISTING ARRAY (OR CREATE NEW) ----",
-									"    let arrRaw = pm.environment.get(ARRAY_ENV_KEY);",
-									"    let arr;",
-									"",
-									"    try {",
-									"        if (arrRaw) {",
-									"            arr = JSON.parse(arrRaw);",
-									"            if (!Array.isArray(arr)) {",
-									"                arr = [];",
-									"            }",
-									"        } else {",
-									"            arr = [];",
-									"        }",
-									"    } catch (e) {",
-									"        // If JSON parse fails, start fresh",
-									"        arr = [];",
-									"    }",
-									"",
-									"    // ---- CREATE \"TUPLE\" OF THREE VALUES ----",
-									"    // You can also use [v1, v2, v3] if you prefer pure array-style tuple.",
-									"    const qaVideoCallId = pm.iterationData.get('qaVideoCallId');",
-									"    const rowNumber = pm.iterationData.get('rowNumber');",
-									"    const prodVideoCallId = resp.Id;",
-									"    const tuple = [rowNumber, qaVideoCallId, prodVideoCallId];",
-									"",
-									"    // ---- PUSH AND SAVE BACK TO ENVIRONMENT ----",
-									"    arr.push(tuple);",
-									"    pm.environment.set(ARRAY_ENV_KEY, JSON.stringify(arr));",
-									"",
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Each time a call is created, generate new externalId",
+									"var externalId = require('uuid');",
+									"pm.environment.set(\"externalId\", externalId.v4());"
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-a2965e2e-70d9-4fb4-80d8-d2371fcc3962",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -857,7 +800,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "07c14521-ec92-42ae-b240-6eff3f151af7",
 								"exec": [
 									"",
 									"pm.test(\"Successfully found recording object\", () => {",
@@ -876,26 +818,22 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"packages": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "6c907604-81ab-4da1-8880-1a3358bdc9ee",
 								"exec": [
 									"// Each time a call is created, generate new externalId",
 									"var externalId = require('uuid');",
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-e1d1e518-46bf-40c4-acee-24d800d04ead",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -981,7 +919,7 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "c5f5b0d9-3c4d-4e6f-9742-2a973d198bb1"
+								"packages": {}
 							}
 						},
 						{
@@ -991,11 +929,10 @@
 									""
 								],
 								"type": "text/javascript",
-								"id": "931feaa1-57c4-47f4-bcca-ebbb36d74825"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-1476d846-576b-4beb-bf19-88fc8df0ec01",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1053,7 +990,7 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "2911af8b-e8e7-419e-9363-c7976a66cff6"
+								"packages": {}
 							}
 						},
 						{
@@ -1065,11 +1002,10 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"id": "29be5d74-bf2d-4143-bed4-28f6e5348cbf"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-f1c88ee7-8c30-4b4d-a281-45626a60d9e0",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1131,7 +1067,7 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "74fe4f03-0409-4ae6-9d23-af2b7e043766"
+								"packages": {}
 							}
 						},
 						{
@@ -1143,11 +1079,10 @@
 									"pm.environment.set(\"externalId\", externalId.v4());"
 								],
 								"type": "text/javascript",
-								"id": "864390e5-990b-48e6-a6d1-eb59e9edf075"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-bdc39a77-f094-4adf-ba85-34647225d797",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1194,7 +1129,6 @@
 					"response": []
 				}
 			],
-			"id": "48313189-3995e842-1fec-4366-acc7-a5ba911c4bc5",
 			"description": "This folder will create the call entities."
 		},
 		{
@@ -1219,11 +1153,10 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "eb8cc8de-9cc2-42b3-8b1f-3911528c99cb"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-1edb5aa7-1926-4322-9a50-39df546b95ae",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1271,7 +1204,6 @@
 					"response": []
 				}
 			],
-			"id": "48313189-eee48117-af98-4a90-9d92-9af99fd2ed2e",
 			"description": "This folder will fetch the details to upload a call to S3, and perform the upload."
 		},
 		{
@@ -1304,11 +1236,10 @@
 									""
 								],
 								"type": "text/javascript",
-								"id": "2a020a54-3d65-41f9-adf6-3723f20e6564"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-57ae8201-db0c-474a-b700-dff2f59177f2",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1377,11 +1308,10 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "72cb3c77-6e7a-4fa1-9d09-1b8b058b0967"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-ae9b9649-bc36-4058-bb4a-9500c49b8c03",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1463,7 +1393,7 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "b291dd09-77b4-4b07-affe-c0f38af3dcdb"
+								"packages": {}
 							}
 						},
 						{
@@ -1473,11 +1403,10 @@
 									""
 								],
 								"type": "text/javascript",
-								"id": "fb3a1777-e7c2-4431-bba9-f76ab7c2c3b9"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-48c9570b-9453-4c53-adc4-0a5ae4306b55",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1523,7 +1452,6 @@
 					"response": []
 				}
 			],
-			"id": "48313189-ec260414-1b96-4456-83f7-fd7ca84d8c1b",
 			"description": "This folder will set up the Ofek data for the call, including the structure, insights, and transcript. The tests on these calls may not reflect whether or not the data was processed successfully, as the calls do not return errors in the Ofek payloads."
 		},
 		{
@@ -1535,7 +1463,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a9d30c4a-0082-4d66-9e93-6f1f2d375ea9",
 								"exec": [
 									"pm.test(\"Successfully queued\", () => {",
 									"    let success;",
@@ -1550,22 +1477,19 @@
 									"        pm.environment.unset(\"participantRelatedId\" + i);",
 									"    }",
 									"",
-									"    console.log('pc', success);",
-									"",
 									"    if (!success) {",
-									"        console.log('hello')",
 									"        pm.execution.setNextRequest(null);",
 									"        pm.expect.fail(\"Failed to queue\");",
 									"    }",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b99834f6-b706-434e-a4e6-4a6c82ce1b98",
 								"exec": [
 									"/* Example payload",
 									"[{\\\"InsightName\\\": \\\"Key Takeaways\\\" , \\\"GeneratedText\\\": \\\"The customer is interested in our new product line and sees potential for integration with their existing systems. They are currently facing challenges with their current vendor and are looking for a more reliable solution. The decision-making process involves multiple stakeholders, including the IT and procurement departments.\\\" , \\\"InsightTypeId\\\": \\\"e9763e45-cde8-4f42-afc9-8128da2b24dc\\\"}, {\\\"InsightName\\\": \\\"Challenges and Concerns\\\" , \\\"GeneratedText\\\": \\\"The customer is worried about the cost implications and budget constraints. They have concerns about the compatibility of our product with their existing systems. There is a need for a clear migration plan to ensure minimal disruption to their operations.\\\" , \\\"InsightTypeId\\\": \\\"eebf77af-7e24-42e2-8dfc-092193a4c157\\\"}, {\\\"InsightName\\\": \\\"Business Opportunities\\\" , \\\"GeneratedText\\\": \\\"Potential to upsell our premium support package given their dissatisfaction with current vendor support. Opportunity to introduce our complementary products that can enhance their existing setup. Possibility of a long-term partnership as they are looking for a reliable vendor for future projects.\\\"}]",
@@ -1607,11 +1531,11 @@
 									"    pm.execution.skipRequest();",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-ab2da377-452a-473f-a7ca-050ca754455e",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1675,11 +1599,10 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "199fc2c4-aafb-49ab-a4b4-facee1ca438c"
+								"packages": {}
 							}
 						}
 					],
-					"id": "48313189-9d13a75d-bf46-492c-b098-c056f535c686",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1724,8 +1647,29 @@
 					},
 					"response": []
 				}
-			],
-			"id": "48313189-06a2c28f-f531-484c-84bf-3c6de9747578"
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
