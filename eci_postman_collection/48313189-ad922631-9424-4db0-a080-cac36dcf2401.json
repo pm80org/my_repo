@@ -33,9 +33,13 @@
 									"        pm.execution.setNextRequest(null);",
 									"        pm.expect.fail(\"Failed\");",
 									"    }",
+									"",
+									"    // hey - 1",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -45,7 +49,9 @@
 								"exec": [
 									"console.log(\"hello\");"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
