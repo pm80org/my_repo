@@ -937,6 +937,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "c5f5b0d9-3c4d-4e6f-9742-2a973d198bb1",
 								"exec": [
 									"",
 									"pm.test(\"Successfully found participants\", () => {",
@@ -950,17 +951,23 @@
 									"        pm.expect.fail(\"Failed to find participants: \" + errMsg);",
 									"    }",
 									"",
-									"    // Get existing participant related person information",
-									"    let participantsInternalJson = JSON.parse(pm.environment.get(\"participantsInternalJson\"));",
-									"    let participantsExternalJson = JSON.parse(pm.environment.get(\"participantsExternalJson\"));",
-									"    let participants = [...participantsInternalJson, ...participantsExternalJson];",
+									"    // // Get existing participant related person information",
+									"    // let participantsInternalJson = JSON.parse(pm.environment.get(\"participantsInternalJson\"));",
+									"    // let participantsExternalJson = JSON.parse(pm.environment.get(\"participantsExternalJson\"));",
+									"    // let participants = [...participantsInternalJson, ...participantsExternalJson];",
 									"",
-									"    // Build a map from relatedPersonId -> VideoCallParticipant Id",
-									"    let relatedRecordIdToVCPIdMap = {};",
-									"    resp.records.forEach(vcp => relatedRecordIdToVCPIdMap[vcp.RelatedPersonId] = vcp.Id);",
+									"    // // Build a map from relatedPersonId -> VideoCallParticipant Id",
+									"    // let relatedRecordIdToVCPIdMap = {};",
+									"    // resp.records.forEach(vcp => relatedRecordIdToVCPIdMap[vcp.RelatedPersonId] = vcp.Id);",
 									"",
-									"    // Add data from map into list so each participant has a VideoCallParticipant Id",
-									"    participants.map(participant => participant.vcpId = relatedRecordIdToVCPIdMap[participant.id]);",
+									"    // // Add data from map into list so each participant has a VideoCallParticipant Id",
+									"    // participants.map(participant => participant.vcpId = relatedRecordIdToVCPIdMap[participant.id]);",
+									"",
+									"    let participants = [",
+									"        { id: \"0053y00000GBPfzAAH\", name: \"User A\", vcpId: \"1afed000000IdnhAAC\" },",
+									"        { id: \"003ed000007JiNtAAK\", name: \"Contact B\", vcpId: \"1afed000000IdniAAC\" }",
+									"    ];",
+									"",
 									"",
 									"    // Finally, set this participant info in the environment and unstructured data",
 									"    for (let i=0; i<participants.length; i++) {",
@@ -980,17 +987,20 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "c5f5b0d9-3c4d-4e6f-9742-2a973d198bb1"
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "931feaa1-57c4-47f4-bcca-ebbb36d74825",
 								"exec": [
 									""
 								],
 								"type": "text/javascript",
-								"id": "931feaa1-57c4-47f4-bcca-ebbb36d74825"
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
