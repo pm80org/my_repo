@@ -201,7 +201,9 @@
 									"pm.environment.set(\"transcript\", rawTranscript);",
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						},
 						{
@@ -221,7 +223,18 @@
 									"",
 									"let currIndex = pm.environment.get(\"callCount\")-1;",
 									"let rawCallData = rawData[currIndex];*/",
+									"",
+									"// *** my code",
 									"console.log('here');",
+									"",
+									"const videoCallId = pm.iterationData.get('videoCallId');",
+									"pm.environment.set(\"videoCallId\", videoCallId);",
+									"",
+									"const videoCallRecordingId = pm.iterationData.get('videoCallRecordingId');",
+									"pm.environment.set(\"videoCallRecordingId\", videoCallRecordingId);",
+									"",
+									"// *** end - my code",
+									"",
 									"",
 									"if (pm.iterationData.get(\"name\") != null) {",
 									"    // Copy over JSON data",
@@ -284,7 +297,9 @@
 									"    }   ",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
