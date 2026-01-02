@@ -200,7 +200,8 @@
 									"rawTranscript = JSON.stringify(transcript);",
 									"rawTranscript = rawTranscript.replaceAll(\"\\\"\",\"\\\\\\\"\");",
 									"pm.environment.set(\"transcript\", rawTranscript);",
-									""
+									"",
+									"console.log(\"here-3\");"
 								],
 								"type": "text/javascript",
 								"packages": {},
