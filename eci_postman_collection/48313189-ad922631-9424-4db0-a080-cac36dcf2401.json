@@ -786,7 +786,6 @@
 									"",
 									"    const ARRAY_ENV_KEY = \"my_array\";",
 									"    ",
-									"        // ---- LOAD EXISTING ARRAY (OR CREATE NEW) ----",
 									"    let arrRaw = pm.environment.get(ARRAY_ENV_KEY);",
 									"    let arr;",
 									"",
