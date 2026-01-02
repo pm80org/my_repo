@@ -14,11 +14,12 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3783a898-0a04-48b2-82b9-b8e5c21f1f85",
+								"id": "0b7ecfd6-a833-4b25-aec4-6a23929cf2a5",
 								"exec": [
 									"pm.test(\"Successful login\", () => {",
 									"    try {",
 									"        var result = xml2Json(pm.response.text())[\"soapenv:Envelope\"][\"soapenv:Body\"].loginResponse.result;",
+									"        console.log('result', result);",
 									"        var url = result.serverUrl.split(\"/\");",
 									"        pm.environment.set(\"accessToken\", result.sessionId);",
 									"        pm.environment.set(\"endpoint\", url[0] + \"//\" + url[2]);",
@@ -44,7 +45,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "dc07915c-0435-4212-93da-d8bf9b8f1462",
+								"id": "dbabbf6f-d4c4-4a73-956d-0190f62d79e1",
 								"exec": [
 									"console.log(\"hello\");"
 								],
@@ -226,12 +227,6 @@
 									"",
 									"// *** my code",
 									"console.log('here');",
-									"",
-									"const videoCallId = pm.iterationData.get('videoCallId');",
-									"pm.environment.set(\"videoCallId\", videoCallId);",
-									"",
-									"const videoCallRecordingId = pm.iterationData.get('videoCallRecordingId');",
-									"pm.environment.set(\"videoCallRecordingId\", videoCallRecordingId);",
 									"",
 									"// *** end - my code",
 									"",
@@ -986,12 +981,10 @@
 									"    vcpId: r.Id",
 									"}));",
 									"",
-									"// Validate lengths",
 									"if (participants.length !== participantsOrig.length) {",
 									"  pm.execution.setNextRequest(null);",
 									"  pm.expect.fail(\"lenght not same\");",
 									"};",
-									"",
 									"// ** end - my code",
 									"",
 									"    // Finally, set this participant info in the environment and unstructured data",
@@ -1021,7 +1014,17 @@
 							"script": {
 								"id": "931feaa1-57c4-47f4-bcca-ebbb36d74825",
 								"exec": [
-									""
+									"",
+									"// *** my code",
+									"console.log('here-2');",
+									"",
+									"const videoCallId = pm.iterationData.get('videoCallId');",
+									"pm.environment.set(\"videoCallId\", videoCallId);",
+									"",
+									"const videoCallRecordingId = pm.iterationData.get('videoCallRecordingId');",
+									"pm.environment.set(\"videoCallRecordingId\", videoCallRecordingId);",
+									"",
+									"// *** end - my code"
 								],
 								"type": "text/javascript",
 								"packages": {},
