@@ -1072,7 +1072,7 @@
 									"// *** my code",
 									"console.log('here-2');",
 									"",
-									"const videoCallId = pm.iterationData.get('qaVideoCallId');",
+									"const videoCallId = 2222;",
 									"pm.environment.set(\"videoCallId\", videoCallId);",
 									"",
 									"const videoCallRecordingId = pm.iterationData.get('qaVideoCallRecordingId');",
@@ -1081,8 +1081,8 @@
 									"// *** end - my code",
 									"",
 									"",
-									"const videoCallId = pm.environment.get(\"videoCallId\");",
-									"console.log(\"pcm-1 \", videoCallId);"
+									"const videoCallId2 = pm.environment.get(\"videoCallId\");",
+									"console.log(\"pcm-1 \", videoCallId2);"
 								],
 								"type": "text/javascript",
 								"packages": {},
