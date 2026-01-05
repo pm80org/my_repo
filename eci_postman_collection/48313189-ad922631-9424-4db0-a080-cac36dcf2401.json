@@ -998,7 +998,6 @@
 									"        pm.execution.setNextRequest(null);",
 									"        pm.expect.fail(\"lenght not same\");",
 									"    };",
-									"",
 									"    // *** end - my code",
 									"",
 									"    pm.environment.set('1-participants', JSON.stringify(participants));",
