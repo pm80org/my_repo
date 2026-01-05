@@ -961,6 +961,7 @@
 								"exec": [
 									"",
 									"pm.test(\"Successfully found participants\", () => {",
+									"    console.log(\"post-scri getVideoCallParticipantsData\");",
 									"    let resp = pm.response.json();",
 									"    if (Array.isArray(resp)) {",
 									"        pm.execution.setNextRequest(null);",
