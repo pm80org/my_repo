@@ -47,6 +47,11 @@
 							"script": {
 								"id": "dbabbf6f-d4c4-4a73-956d-0190f62d79e1",
 								"exec": [
+									"const envName = pm.environment.name || \"(no environment selected)\";",
+									"console.log(\"Environment:\", envName);",
+									"pm.test(\"Print environment name\", function () {",
+									"  console.log(\"✅ Running in environment:\", envName);",
+									"});",
 									""
 								],
 								"type": "text/javascript",
