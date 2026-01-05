@@ -1028,13 +1028,13 @@
 								"exec": [
 									"",
 									"// *** my code",
-									"console.log('here-2');",
+									"// console.log('here-2');",
 									"",
-									"const videoCallId = pm.iterationData.get('qaVideoCallId');",
-									"pm.environment.set(\"videoCallId\", videoCallId);",
+									"// const videoCallId = pm.iterationData.get('qaVideoCallId');",
+									"// pm.environment.set(\"videoCallId\", videoCallId);",
 									"",
-									"const videoCallRecordingId = pm.iterationData.get('qaVideoCallRecordingId');",
-									"pm.environment.set(\"videoCallRecordingId\", videoCallRecordingId);",
+									"// const videoCallRecordingId = pm.iterationData.get('qaVideoCallRecordingId');",
+									"// pm.environment.set(\"videoCallRecordingId\", videoCallRecordingId);",
 									"",
 									"// *** end - my code"
 								],
