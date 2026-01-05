@@ -1564,7 +1564,7 @@
 			"description": "This folder will set up the Ofek data for the call, including the structure, insights, and transcript. The tests on these calls may not reflect whether or not the data was processed successfully, as the calls do not return errors in the Ofek payloads."
 		},
 		{
-			"name": "[OPTIONAL] Gen Insights Copy",
+			"name": "[OPTIONAL] Gen Insights",
 			"item": [
 				{
 					"name": "Create Call Insights - Mock Gen Insights",
