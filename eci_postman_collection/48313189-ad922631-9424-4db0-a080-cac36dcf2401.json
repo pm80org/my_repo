@@ -47,7 +47,7 @@
 							"script": {
 								"id": "dbabbf6f-d4c4-4a73-956d-0190f62d79e1",
 								"exec": [
-									"console.log(\"hello\");"
+									""
 								],
 								"type": "text/javascript",
 								"packages": {},
