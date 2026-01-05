@@ -1044,8 +1044,9 @@
 									"// *** end - my code",
 									"",
 									"",
-									"const videoCallId2 = pm.environment.get(\"videoCallId\");",
-									"console.log(\"pcm-1 \", videoCallId2);"
+									"const a = pm.environment.get(\"videoCallId\");",
+									"const b = pm.environment.get(\"videoCallRecordingId\");",
+									"console.log(\"pcm-1, videoCallId, videoCallRecordingId: \", a, b);"
 								],
 								"type": "text/javascript",
 								"packages": {},
