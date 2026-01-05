@@ -783,7 +783,7 @@
 									"",
 									"    pm.environment.set(\"videoCallId\", resp.Id);",
 									"",
-									"    // ----  MY CODE   ------",
+									"    // *** ----  MY CODE   ------",
 									"",
 									"    const ARRAY_ENV_KEY = \"my_array\";",
 									"    ",
@@ -814,6 +814,8 @@
 									"    // ---- PUSH AND SAVE BACK TO ENVIRONMENT ----",
 									"    arr.push(tuple);",
 									"    pm.environment.set(ARRAY_ENV_KEY, JSON.stringify(arr));",
+									"",
+									"    // *** ----  END OF MY CODE  ------",
 									"",
 									"});"
 								],
