@@ -1417,6 +1417,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "72cb3c77-6e7a-4fa1-9d09-1b8b058b0967",
 								"exec": [
 									"pm.test(\"Successfully queued\", () => {",
 									"    let success;",
@@ -1435,7 +1436,8 @@
 									"});"
 								],
 								"type": "text/javascript",
-								"id": "72cb3c77-6e7a-4fa1-9d09-1b8b058b0967"
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
