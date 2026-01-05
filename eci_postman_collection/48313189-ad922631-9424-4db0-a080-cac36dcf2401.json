@@ -949,6 +949,42 @@
 					"response": []
 				},
 				{
+					"name": "dummy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "59160bdf-7084-4877-8d93-5cd065685a97",
+								"exec": [
+									"",
+									"// *** my code",
+									"console.log('here-2');",
+									"",
+									"const videoCallId = pm.iterationData.get('qaVideoCallId');",
+									"pm.environment.set(\"videoCallId\", videoCallId);",
+									"",
+									"const videoCallRecordingId = pm.iterationData.get('qaVideoCallRecordingId');",
+									"pm.environment.set(\"videoCallRecordingId\", videoCallRecordingId);",
+									"",
+									"// *** end - my code"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"id": "48313189-9502d297-e4f6-441d-8fd6-79cdee6aaa3a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
 					"name": "Get VideoCallParticipants",
 					"event": [
 						{
@@ -1239,18 +1275,6 @@
 								"{{videoCallRecordingId}}"
 							]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "New Request",
-					"id": "48313189-9502d297-e4f6-441d-8fd6-79cdee6aaa3a",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": []
 					},
 					"response": []
 				}
