@@ -52,7 +52,10 @@
 									"pm.test(\"Print environment name\", function () {",
 									"  console.log(\"✅ Running in environment:\", envName);",
 									"});",
-									""
+									"",
+									"",
+									"let a = pm.environment.get(\"my_var\");",
+									"console.log(\"a\", a);"
 								],
 								"type": "text/javascript",
 								"packages": {},
