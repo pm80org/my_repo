@@ -1564,7 +1564,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"OrganizationId\": \"{{orgId}}\",\n    \"ConversationId\": \"{{videoCallRecordingId}}\",\n    \"CallId\": \"{{videoCallId}}\",\n    \"RecordingId\": \"{{videoCallRecordingId}}\",\n    \"TranscriptionCreationDate\": \"{{$isoTimestamp}}\",\n    \"BaseStartTime\": {{baseTranscriptStartTime}},\n    \"IsTranscriptTruncated\": false,\n    \"TranscriptEntries\": \"{{transcript}}\",\n    \"TranscribedLanguage\": \"{{language}}\"\n}\n",
+							"raw": "{\n    \"OrganizationId\": \"{{orgId}}\",\n    \"ConversationId\": \"{{videoCallRecordingId}}\",\n    \"CallId\": \"{{videoCallId}}\",\n    \"RecordingId\": \"{{videoCallRecordingId}}\",\n    \"TranscriptionCreationDate\": \"{{$isoTimestamp}}\",\n    \"BaseStartTime\": {{baseTranscriptStartTime}},\n    \"IsTranscriptTruncated\": false,\n    \"TranscriptEntries\": \"{{transcript}}\",\n    \"TranscribedLanguage\": \"{{language}}\"\n}\n\n",
 							"options": {
 								"raw": {
 									"language": "json"
