@@ -825,6 +825,7 @@
 									"    // ---- PUSH AND SAVE BACK TO ENVIRONMENT ----",
 									"    arr.push(tuple);",
 									"    pm.environment.set(ARRAY_ENV_KEY, JSON.stringify(arr));",
+									"    console.log('pcm my_arry', arr)",
 									"",
 									"    // *** ----  END OF MY CODE  ------",
 									"",
